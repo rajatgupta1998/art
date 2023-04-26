@@ -23,6 +23,7 @@
 #include "profile.h"  // from VM header
 
 #include <assert.h>
+#include <cstdio>
 #include <errno.h>
 #include <inttypes.h>
 #include <stdint.h>
@@ -1103,7 +1104,7 @@ void dumpTrace() {
     MethodEntry* method = lookupMethod(pKeys, methodId);
     if (method == nullptr) {
       method = &bogusMethod;
-      sprintf(bogusBuf, "methodId: %#" PRIx64 "", methodId);
+      std::snprintf(bogusBuf, sizeof(bogusBuf), "methodId: %#" PRIx64 "", methodId);
       method->signature = bogusBuf;
     }
 
@@ -1266,11 +1267,11 @@ void printInclusiveMethod(MethodEntry* method, TimedMethod* list, int32_t numCal
     const char* methodName = relative->methodName;
     const char* signature = relative->signature;
     double per = 100.0 * pTimed->elapsedInclusive / methodTotal;
-    sprintf(buf, "[%d]", relative->index);
+    std::snprintf(buf, sizeof(buf), "[%d]", relative->index);
     if (gOptions.outputHtml) {
       int32_t len = strlen(buf);
       if (len > num_spaces) len = num_spaces;
-      sprintf(buf, "<a href=\"#m%d\">[%d]", relative->index, relative->index);
+      std::snprintf(buf, sizeof(buf), "<a href=\"#m%d\">[%d]", relative->index, relative->index);
       space_ptr = &spaces[len];
       className = htmlEscape(className, classBuf, HTML_BUFSIZE);
       methodName = htmlEscape(methodName, methodBuf, HTML_BUFSIZE);
@@ -1394,7 +1395,7 @@ void printExclusiveProfile(MethodEntry** pMethods, int32_t numMethods, uint64_t 
     double per = 100.0 * method->elapsedExclusive / total;
     double sum_per = 100.0 * sum / total;
     if (gOptions.outputHtml) {
-      sprintf(anchor_buf, "<a href=\"#m%d\">", method->index);
+      std::snprintf(anchor_buf, sizeof(anchor_buf), "<a href=\"#m%d\">", method->index);
       className = htmlEscape(className, classBuf, HTML_BUFSIZE);
       methodName = htmlEscape(methodName, methodBuf, HTML_BUFSIZE);
       signature = htmlEscape(signature, signatureBuf, HTML_BUFSIZE);
@@ -1542,7 +1543,7 @@ void printInclusiveProfile(MethodEntry** pMethods, int32_t numMethods, uint64_t 
     }
 
     double per = 100.0 * method->elapsedInclusive / total;
-    sprintf(buf, "[%d]", ii);
+    std::snprintf(buf, sizeof(buf), "[%d]", ii);
     if (method->methodName) {
       printf("%-6s %5.1f%%   %5s %6s %6d+%-6d %9" PRIu64 " %s.%s %s\n", buf,
              per, "", "", method->numCalls[0], method->numCalls[1],
@@ -1745,19 +1746,19 @@ void printClassProfiles(TraceData* traceData, uint64_t sumThreadTime) {
           "onMouseOut=\"javascript:onMouseOut(this)\"><span class=\"parent\" "
           "id=\"xd%d\">+</span>",
           ii, ii);
-      sprintf(buf, "%" PRIu64, pClass->elapsedExclusive);
+      std::snprintf(buf, sizeof(buf), "%" PRIu64, pClass->elapsedExclusive);
       printHtmlField(buf, 9);
       printf(" ");
-      sprintf(buf, "%.1f", per);
+      std::snprintf(buf, sizeof(buf), "%.1f", per);
       printHtmlField(buf, 7);
       printf(" ");
-      sprintf(buf, "%.1f", sum_per);
+      std::snprintf(buf, sizeof(buf), "%.1f", sum_per);
       printHtmlField(buf, 7);
       printf(" ");
-      sprintf(buf, "%d", pClass->numCalls[0]);
+      std::snprintf(buf, sizeof(buf), "%d", pClass->numCalls[0]);
       printHtmlField(buf, 6);
       printf("+");
-      sprintf(buf, "%d", pClass->numCalls[1]);
+      std::snprintf(buf, sizeof(buf), "%d", pClass->numCalls[1]);
       printHtmlField(buf, -6);
       printf(" ");
       printf("%s", className);
@@ -1785,22 +1786,22 @@ void printClassProfiles(TraceData* traceData, uint64_t sumThreadTime) {
         methodName = htmlEscape(methodName, methodBuf, HTML_BUFSIZE);
         signature = htmlEscape(signature, signatureBuf, HTML_BUFSIZE);
         printf("<div class=\"leaf\"><span class=\"leaf\">&nbsp;</span>");
-        sprintf(buf, "%" PRIu64, method->elapsedExclusive);
+        std::snprintf(buf, sizeof(buf), "%" PRIu64, method->elapsedExclusive);
         printHtmlField(buf, 9);
         printf("&nbsp;");
-        sprintf(buf, "%" PRIu64, method->elapsedInclusive);
+        std::snprintf(buf, sizeof(buf), "%" PRIu64, method->elapsedInclusive);
         printHtmlField(buf, 9);
         printf("&nbsp;");
-        sprintf(buf, "%.1f", per);
+        std::snprintf(buf, sizeof(buf), "%.1f", per);
         printHtmlField(buf, 7);
         printf("&nbsp;");
-        sprintf(buf, "%.1f", sum_per);
+        std::snprintf(buf, sizeof(buf), "%.1f", sum_per);
         printHtmlField(buf, 7);
         printf("&nbsp;");
-        sprintf(buf, "%d", method->numCalls[0]);
+        std::snprintf(buf, sizeof(buf), "%d", method->numCalls[0]);
         printHtmlField(buf, 6);
         printf("+");
-        sprintf(buf, "%d", method->numCalls[1]);
+        std::snprintf(buf, sizeof(buf), "%d", method->numCalls[1]);
         printHtmlField(buf, -6);
         printf("&nbsp;");
         printf("<a href=\"#m%d\">[%d]</a>&nbsp;%s&nbsp;%s", method->index,
@@ -1955,19 +1956,19 @@ void printMethodProfiles(TraceData* traceData, uint64_t sumThreadTime) {
           "onMouseOut=\"javascript:onMouseOut(this)\"><span class=\"parent\" "
           "id=\"xe%d\">+</span>",
           ii, ii);
-      sprintf(buf, "%" PRIu64, pUnique->elapsedExclusive);
+      std::snprintf(buf, sizeof(buf), "%" PRIu64, pUnique->elapsedExclusive);
       printHtmlField(buf, 9);
       printf(" ");
-      sprintf(buf, "%.1f", per);
+      std::snprintf(buf, sizeof(buf), "%.1f", per);
       printHtmlField(buf, 7);
       printf(" ");
-      sprintf(buf, "%.1f", sum_per);
+      std::snprintf(buf, sizeof(buf), "%.1f", sum_per);
       printHtmlField(buf, 7);
       printf(" ");
-      sprintf(buf, "%d", pUnique->numCalls[0]);
+      std::snprintf(buf, sizeof(buf), "%d", pUnique->numCalls[0]);
       printHtmlField(buf, 6);
       printf("+");
-      sprintf(buf, "%d", pUnique->numCalls[1]);
+      std::snprintf(buf, sizeof(buf), "%d", pUnique->numCalls[1]);
       printHtmlField(buf, -6);
       printf(" ");
       printf("%s", methodName);
@@ -1995,22 +1996,22 @@ void printMethodProfiles(TraceData* traceData, uint64_t sumThreadTime) {
         className = htmlEscape(className, classBuf, HTML_BUFSIZE);
         signature = htmlEscape(signature, signatureBuf, HTML_BUFSIZE);
         printf("<div class=\"leaf\"><span class=\"leaf\">&nbsp;</span>");
-        sprintf(buf, "%" PRIu64, method->elapsedExclusive);
+        std::snprintf(buf, sizeof(buf), "%" PRIu64, method->elapsedExclusive);
         printHtmlField(buf, 9);
         printf("&nbsp;");
-        sprintf(buf, "%" PRIu64, method->elapsedInclusive);
+        std::snprintf(buf, sizeof(buf), "%" PRIu64, method->elapsedInclusive);
         printHtmlField(buf, 9);
         printf("&nbsp;");
-        sprintf(buf, "%.1f", per);
+        std::snprintf(buf, sizeof(buf), "%.1f", per);
         printHtmlField(buf, 7);
         printf("&nbsp;");
-        sprintf(buf, "%.1f", sum_per);
+        std::snprintf(buf, sizeof(buf), "%.1f", sum_per);
         printHtmlField(buf, 7);
         printf("&nbsp;");
-        sprintf(buf, "%d", method->numCalls[0]);
+        std::snprintf(buf, sizeof(buf), "%d", method->numCalls[0]);
         printHtmlField(buf, 6);
         printf("+");
-        sprintf(buf, "%d", method->numCalls[1]);
+        std::snprintf(buf, sizeof(buf), "%d", method->numCalls[1]);
         printHtmlField(buf, -6);
         printf("&nbsp;");
         printf("<a href=\"#m%d\">[%d]</a>&nbsp;%s.%s&nbsp;%s", method->index,
